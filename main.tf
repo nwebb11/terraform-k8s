@@ -4,10 +4,6 @@ terraform {
       source  = "hashicorp/google"
       version = "4.43.0"
     }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "4.0.4"
-    }
   }
 }
 
@@ -16,10 +12,6 @@ provider "google" {
   project     = "terraform-368421"
   region      = "europe-west2"
   zone        = "europe-west2-c"
-}
-
-provider "tls" {
-  // no config needed
 }
 
 resource "google_project_service" "cloud_resource_manager" {
@@ -32,15 +24,13 @@ resource "google_project_service" "compute" {
   disable_on_destroy = false
 }
 
-data "google_client_openid_userinfo" "me" {}
-
 resource "google_compute_instance" "vm_instance" {
   name         = "terraform-instance"
   machine_type = "e2-micro"
   tags         = ["allow-ssh"]
 
   metadata = {
-    ssh-keys = "${split("@", data.google_client_openid_userinfo.me.email)[0]}:${tls_private_key.ssh.public_key_openssh}"
+    ssh-keys = "terraform:${file("./terraform-gcp-key.pub")}"
   }
 
   boot_disk {
@@ -77,15 +67,4 @@ resource "google_compute_firewall" "allow_ssh" {
     protocol = "tcp"
     ports    = ["22"]
   }
-}
-
-resource "tls_private_key" "ssh" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "local_file" "ssh_private_key_pem" {
-  content         = tls_private_key.ssh.private_key_pem
-  filename        = ".ssh/terraform-gcp-key"
-  file_permission = "0600"
 }
