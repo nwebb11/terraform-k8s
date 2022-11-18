@@ -19,6 +19,11 @@ variable "zones" {
   default = ["a", "b", "c"]
 }
 
+variable "node_ids" {
+  type    = list(string)
+  default = ["1", "2", "3"]
+}
+
 variable "cidr" {
   type    = string
   default = "192.168.100.0/24"
