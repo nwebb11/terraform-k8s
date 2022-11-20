@@ -26,7 +26,7 @@ variable "node_ids" {
 
 variable "cidr" {
   type    = string
-  default = "192.168.100.0/24"
+  default = "10.1.0.0/24"
 }
 
 variable "ssh_user" {

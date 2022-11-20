@@ -3,12 +3,12 @@ resource "google_compute_instance" "vm_instance_control" {
   name         = "${var.name}-control-${element(var.node_ids, count.index)}"
   machine_type = "e2-highcpu-2"
   zone         = "${var.region}-${element(var.zones, count.index)}"
-  tags         = ["allow-ssh"]
+  tags         = ["allow-ssh", "allow-https"]
 
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-minimal-2204-lts"
-      size  = 10
+      size  = 30
       type = "pd-ssd"
     }
   }
@@ -48,12 +48,12 @@ resource "google_compute_instance" "vm_instance_worker" {
   name         = "${var.name}-worker-${element(var.node_ids, count.index)}"
   machine_type = "e2-standard-2"
   zone         = "${var.region}-${element(var.zones, count.index)}"
-  tags         = ["allow-ssh"]
+  tags         = ["allow-ssh", "allow-https"]
 
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-minimal-2204-lts"
-      size  = 10
+      size  = 30
       type = "pd-ssd"
     }
   }
