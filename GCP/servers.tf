@@ -3,7 +3,6 @@ resource "google_compute_instance" "vm_instance_control" {
   name         = "${var.name}-control-${element(var.node_ids, count.index)}"
   machine_type = "e2-highcpu-2"
   zone         = "${var.region}-${element(var.zones, count.index)}"
-  tags         = ["allow-ssh", "allow-https"]
 
   boot_disk {
     initialize_params {
@@ -48,7 +47,6 @@ resource "google_compute_instance" "vm_instance_worker" {
   name         = "${var.name}-worker-${element(var.node_ids, count.index)}"
   machine_type = "e2-standard-2"
   zone         = "${var.region}-${element(var.zones, count.index)}"
-  tags         = ["allow-ssh", "allow-https"]
 
   boot_disk {
     initialize_params {

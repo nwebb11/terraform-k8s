@@ -22,7 +22,6 @@ resource "google_compute_subnetwork" "main" {
 resource "google_compute_firewall" "allow_ssh" {
   name          = "allow-ssh"
   network       = google_compute_network.main.name
-  target_tags   = ["allow-ssh"]
   source_ranges = ["0.0.0.0/0"]
 
   allow {
@@ -34,11 +33,38 @@ resource "google_compute_firewall" "allow_ssh" {
 resource "google_compute_firewall" "allow_https" {
   name          = "allow-https"
   network       = google_compute_network.main.name
-  target_tags   = ["allow-https"]
   source_ranges = ["0.0.0.0/0"]
 
   allow {
     protocol = "tcp"
     ports    = ["443"]
   }
+}
+
+resource "google_compute_firewall" "servers-out" {
+  name    = "${var.name}-servers-out"
+  network = google_compute_network.main.name
+  direction = "EGRESS"
+  allow {
+    protocol = "all"
+  }
+}
+
+resource "google_compute_firewall" "servers-in" {
+  name    = "${var.name}-servers-in"
+  network = google_compute_network.main.name
+  allow {
+    protocol = "all"
+  }
+
+  source_ranges = [
+    var.cidr,
+
+    format("%s/32",google_compute_instance.vm_instance_control[0].network_interface[0].access_config[0].nat_ip),
+    format("%s/32",google_compute_instance.vm_instance_control[1].network_interface[0].access_config[0].nat_ip),
+    format("%s/32",google_compute_instance.vm_instance_control[2].network_interface[0].access_config[0].nat_ip),
+    format("%s/32",google_compute_instance.vm_instance_worker[0].network_interface[0].access_config[0].nat_ip),
+    format("%s/32",google_compute_instance.vm_instance_worker[1].network_interface[0].access_config[0].nat_ip),
+    format("%s/32",google_compute_instance.vm_instance_worker[2].network_interface[0].access_config[0].nat_ip)
+  ]
 }
